@@ -1,0 +1,25 @@
+Description: Tells the wrapper where to look for things in debian.
+Author: Scott Howard <showard314@gmail.com>
+
+Index: Arduino-1.6.3/build/linux/dist/arduino
+===================================================================
+--- Arduino-1.6.3.orig/build/linux/dist/arduino
++++ Arduino-1.6.3/build/linux/dist/arduino
+@@ -14,7 +14,7 @@ if [[ `id -u` -ne 0 ]]; then
+ fi
+ 
+ CURDIR=`pwd`
+-APPDIR="$(dirname -- "$(readlink -f -- "${0}")" )"
++APPDIR=/usr/share/arduino
+ 
+ cd "$APPDIR"
+ 
+@@ -28,7 +28,7 @@ do
+ done
+ export CLASSPATH
+ 
+-LD_LIBRARY_PATH=`pwd`/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
++LD_LIBRARY_PATH="/usr/lib/jni${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+ export LD_LIBRARY_PATH
+ 
+ export PATH="${APPDIR}/java/bin:${PATH}"

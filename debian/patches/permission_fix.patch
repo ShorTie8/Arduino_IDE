@@ -1,0 +1,24 @@
+===================================================================
+Index: Arduino-1.6.5/build/linux/dist/arduino
+===================================================================
+--- Arduino-1.6.5.orig/build/linux/dist/arduino
++++ Arduino-1.6.5/build/linux/dist/arduino
+@@ -1,5 +1,18 @@
+ #!/usr/bin/env bash
+ 
++if [[ `id -u` -ne 0 ]]; then
++#    for group in dialout tty; do
++    for group in dialout; do
++	if ! groups | grep -q "\b$group\b"; then
++	    missing_groups="$missing_groups\n$group"
++	fi
++    done
++
++    if [[ -n $missing_groups ]] && ! java -jar /usr/share/arduino/arduinopc.jar; then
++	pkexec /usr/bin/arduino-add-groups
++    fi
++fi
++
+ CURDIR=`pwd`
+ APPDIR="$(dirname -- "$(readlink -f -- "${0}")" )"
+ 

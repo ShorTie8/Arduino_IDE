@@ -1,0 +1,13 @@
+arm_fix.patch
+sam_fix.patch
+permission_fix.patch
+wrapper_for_deb.patch
+install_jar_links.patch
+no_download_libastylej.patch
+system_libastylej.patch
+remove_copying_binaries.patch
+remove_update_warning.patch
+zepto_js.patch
+path_fix.patch
+#PlatformReWrite.patch
+gpg-disable-check.patch

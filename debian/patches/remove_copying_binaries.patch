@@ -1,0 +1,22 @@
+﻿Description: Arduino copies precompiled binaries into the build tree,
+
+===================================================================
+Index: Arduino-1.6.5/build/build.xml
+===================================================================
+--- Arduino-1.6.5.orig/build/build.xml
++++ Arduino-1.6.5/build/build.xml
+@@ -647,14 +647,6 @@
+       <param name="JVM" value="${LINUX32_BUNDLED_JVM}"/>
+     </antcall>
+ 
+-    <antcall target="avr-toolchain-bundle">
+-      <param name="unpack_target" value="untar"/>
+-      <param name="gcc_archive_file" value="avr-gcc-4.8.1-arduino5-i686-pc-linux-gnu.tar.bz2"/>
+-      <param name="gcc_version" value="4.8.1-arduino5"/>
+-      <param name="avrdude_archive_file" value="avrdude-6.0.1-arduino5-i686-pc-linux-gnu.tar.bz2"/>
+-      <param name="avrdude_version" value="6.0.1-arduino5"/>
+-    </antcall>
+-
+     <antcall target="package-library-index-json-bundle"/>
+   </target>
+ 

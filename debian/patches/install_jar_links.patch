@@ -1,0 +1,15 @@
+﻿Description: Prevents ant from following symlinks and including library jars
+
+Index: Arduino-1.6.5/build/build.xml
+===================================================================
+--- Arduino-1.6.5.orig/build/build.xml
++++ Arduino-1.6.5/build/build.xml
+@@ -72,7 +72,7 @@
+   </condition>
+ 
+   <!-- Libraries required for running arduino -->
+-  <fileset dir=".." id="runtime.jars">
++  <fileset dir=".." id="runtime.jars" followsymlinks="no">
+     <include name="arduino-core/arduino-core.jar" />
+     <include name="app/pde.jar" />
+     <include name="app/lib/*.jar" />

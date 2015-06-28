@@ -1,0 +1,5 @@
+arduino (2:1.6.5) experimental; urgency=low
+
+  * updated to Arduino 1.6.5
+
+ -- ShorTie <idiot@dot.com>  Tue, 16 May 2015 04:20:00 -0500

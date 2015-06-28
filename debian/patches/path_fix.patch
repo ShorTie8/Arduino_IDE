@@ -1,0 +1,57 @@
+Index: Arduino-1.6.5/hardware/arduino/avr/platform.txt
+===================================================================
+--- Arduino-1.6.5.orig/hardware/arduino/avr/platform.txt
++++ Arduino-1.6.5/hardware/arduino/avr/platform.txt
+@@ -18,7 +18,7 @@ compiler.warning_flags.more=-Wall
+ compiler.warning_flags.all=-Wall -Wextra
+ 
+ # Default "compiler.path" is correct, change only if you want to overidde the initial value
+-compiler.path={runtime.tools.avr-gcc.path}/bin/
++compiler.path=/usr/bin/
+ compiler.c.cmd=avr-gcc
+ compiler.c.flags=-c -g -Os {compiler.warning_flags} -ffunction-sections -fdata-sections -MMD
+ # -w flag added to avoid printing a wrong warning http://gcc.gnu.org/bugzilla/show_bug.cgi?id=59396
+@@ -85,9 +85,9 @@ recipe.size.regex.eeprom=^(?:\.eeprom)\s
+ # AVR Uploader/Programmers tools
+ # ------------------------------
+ 
+-tools.avrdude.path={runtime.tools.avrdude.path}
+-tools.avrdude.cmd.path={path}/bin/avrdude
+-tools.avrdude.config.path={path}/etc/avrdude.conf
++tools.avrdude.path=/usr/
++tools.avrdude.cmd.path=/usr/bin/avrdude
++tools.avrdude.config.path=/etc/avrdude.conf
+ 
+ tools.avrdude.upload.params.verbose=-v
+ tools.avrdude.upload.params.quiet=-q -q
+@@ -103,7 +103,7 @@ tools.avrdude.erase.pattern="{cmd.path}"
+ 
+ tools.avrdude.bootloader.params.verbose=-v
+ tools.avrdude.bootloader.params.quiet=-q -q
+-tools.avrdude.bootloader.pattern="{cmd.path}" "-C{config.path}" {bootloader.verbose} -p{build.mcu} -c{protocol} {program.extra_params} "-Uflash:w:{runtime.platform.path}/bootloaders/{bootloader.file}:i" -Ulock:w:{bootloader.lock_bits}:m
++tools.avrdude.bootloader.pattern="{cmd.path}" "-C{config.path}" {bootloader.verbose} -p{build.mcu} -c{protocol} {program.extra_params} "-Uflash:w:/usr/share/arduino/hardware/arduino/avr/bootloaders/{bootloader.file}:i" -Ulock:w:{bootloader.lock_bits}:m
+ 
+ 
+ # USB Default Flags
+Index: Arduino-1.6.5/hardware/arduino/sam/platform.txt
+===================================================================
+--- Arduino-1.6.5.orig/hardware/arduino/sam/platform.txt
++++ Arduino-1.6.5/hardware/arduino/sam/platform.txt
+@@ -17,7 +17,7 @@ compiler.warning_flags.default=
+ compiler.warning_flags.more=-Wall
+ compiler.warning_flags.all=-Wall -Wextra
+ 
+-compiler.path={runtime.tools.arm-none-eabi-gcc.path}/bin/
++compiler.path=/usr/bin/
+ compiler.c.cmd=arm-none-eabi-gcc
+ compiler.c.flags=-c -g -Os {compiler.warning_flags} -ffunction-sections -fdata-sections -nostdlib --param max-inline-insns-single=500 -Dprintf=iprintf -MMD
+ compiler.c.elf.cmd=arm-none-eabi-gcc
+@@ -92,7 +92,7 @@ recipe.size.regex=\.text\s+([0-9]+).*
+ # SAM3 Uploader tools
+ # -------------------
+ 
+-tools.bossac.path={runtime.tools.bossac.path}
++tools.bossac.path=/usr/bin/
+ tools.bossac.cmd=bossac
+ tools.bossac.cmd.windows=bossac.exe
+ 

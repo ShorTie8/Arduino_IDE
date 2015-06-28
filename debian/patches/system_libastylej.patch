@@ -1,0 +1,54 @@
+Description: Use system astyle, upstream uses a custom version
+
+Index: Arduino-1.6.5/app/src/cc/arduino/packages/formatter/AStyleInterface.java
+===================================================================
+--- Arduino-1.6.5.orig/app/src/cc/arduino/packages/formatter/AStyleInterface.java
++++ Arduino-1.6.5/app/src/cc/arduino/packages/formatter/AStyleInterface.java
+@@ -27,7 +27,6 @@
+  * Copyright 2015 Arduino LLC (http://www.arduino.cc/)
+  */
+ 
+-package cc.arduino.packages.formatter;
+ 
+ import processing.app.Base;
+ 
+Index: Arduino-1.6.5/app/src/cc/arduino/packages/formatter/AStyle.java
+===================================================================
+--- Arduino-1.6.5.orig/app/src/cc/arduino/packages/formatter/AStyle.java
++++ Arduino-1.6.5/app/src/cc/arduino/packages/formatter/AStyle.java
+@@ -29,7 +29,6 @@
+  * Copyright 2015 Arduino LLC (http://www.arduino.cc/)
+  */
+ 
+-package cc.arduino.packages.formatter;
+ 
+ import processing.app.Base;
+ import processing.app.BaseNoGui;
+Index: Arduino-1.6.5/app/src/processing/app/Editor.java
+===================================================================
+--- Arduino-1.6.5.orig/app/src/processing/app/Editor.java
++++ Arduino-1.6.5/app/src/processing/app/Editor.java
+@@ -1058,10 +1058,7 @@ public class Editor extends JFrame imple
+   private void addInternalTools(JMenu menu) {
+     JMenuItem item;
+ 
+-    item = createToolMenuItem("cc.arduino.packages.formatter.AStyle");
+-    if (item == null) {
+-      throw new NullPointerException("Tool cc.arduino.packages.formatter.AStyle unavailable");
+-    }
++    item = createToolMenuItem("AStyle");
+     item.setName("menuToolsAutoFormat");
+     int modifiers = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+     item.setAccelerator(KeyStroke.getKeyStroke('T', modifiers));
+@@ -2748,10 +2745,7 @@ public class Editor extends JFrame imple
+ 
+     menu.addSeparator();
+ 
+-    JMenuItem item = createToolMenuItem("cc.arduino.packages.formatter.AStyle");
+-    if (item == null) {
+-      throw new NullPointerException("Tool cc.arduino.packages.formatter.AStyle unavailable");
+-    }
++    JMenuItem item = createToolMenuItem("AStyle");
+     item.setName("menuToolsAutoFormat");
+ 
+     menu.add(item);

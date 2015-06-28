@@ -1,0 +1,5 @@
+version=3
+opts=\
+dversionmangle=s/\+dfsg\d*//,\
+uversionmangle=s/00/0\./;s/\-r/\./ \
+https://github.com/arduino/Arduino/tags .*/(\d[\d\.].*)\.tar\.gz

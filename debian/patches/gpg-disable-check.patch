@@ -1,0 +1,14 @@
+Index: Arduino-1.6.5/arduino-core/src/cc/arduino/contributions/packages/ContributionsIndexer.java
+===================================================================
+--- Arduino-1.6.5.orig/arduino-core/src/cc/arduino/contributions/packages/ContributionsIndexer.java
++++ Arduino-1.6.5/arduino-core/src/cc/arduino/contributions/packages/ContributionsIndexer.java
+@@ -79,9 +79,6 @@ public class ContributionsIndexer {
+ 
+   public void parseIndex() throws Exception {
+     File defaultIndexFile = getIndexFile(Constants.DEFAULT_INDEX_FILE_NAME);
+-    if (!isSigned(defaultIndexFile)) {
+-      throw new SignatureVerificationFailedException(Constants.DEFAULT_INDEX_FILE_NAME);
+-    }
+     index = parseIndex(defaultIndexFile);
+ 
+     File[] indexFiles = preferencesFolder.listFiles(new TestPackageIndexFilenameFilter(new PackageIndexFilenameFilter(Constants.DEFAULT_INDEX_FILE_NAME)));

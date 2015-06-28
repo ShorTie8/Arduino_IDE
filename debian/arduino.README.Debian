@@ -1,0 +1,11 @@
+Permissions required for access to USB/Serial ports:
+----------------------------------------------------
+
+User must be in the dialout group in order to write to USB/Serial ports.
+
+I wrote our own java code, in debian/permission-checker, which will ask if the
+user would like to be added, then runs a script with pkexec to add the user
+to the dialout group.
+
+--Scott Howard <showard@debian.org>, Dec 12, 2011
+

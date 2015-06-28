@@ -1,0 +1,20 @@
+﻿Description: don't download libastylj.so
+Index: Arduino-1.6.5/build/build.xml
+===================================================================
+--- Arduino-1.6.5.orig/build/build.xml
++++ Arduino-1.6.5/build/build.xml
+@@ -640,14 +640,6 @@
+     <copy todir="linux/work" file="linux/dist/arduino" />
+     <chmod perm="755" file="linux/work/arduino" />
+ 
+-    <antcall target="unzip">
+-      <param name="archive_file" value="./libastylej-2.05.zip" />
+-      <param name="archive_url" value="http://downloads.arduino.cc/libastylej-2.05.zip" />
+-      <param name="final_folder" value="${staging_folder}/libastylej" />
+-      <param name="dest_folder" value="${staging_folder}" />
+-    </antcall>
+-    <copy file="linux/libastylej/libastylej${arch-bits}.so" tofile="linux/work/lib/libastylej.so" />
+-    <chmod perm="755" file="linux/work/lib/libastylej.so" />
+   </target>
+ 
+   <target name="linux32-build" depends="linux-build" description="Build linux (32-bit) version">

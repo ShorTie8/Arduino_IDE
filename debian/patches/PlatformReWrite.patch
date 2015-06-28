@@ -1,0 +1,19 @@
+Index: Arduino-1.6.5/arduino-core/src/processing/app/debug/LegacyTargetPlatform.java
+===================================================================
+--- Arduino-1.6.5.orig/arduino-core/src/processing/app/debug/LegacyTargetPlatform.java
++++ Arduino-1.6.5/arduino-core/src/processing/app/debug/LegacyTargetPlatform.java
+@@ -119,14 +119,6 @@ public class LegacyTargetPlatform implem
+           format(_("Error loading {0}"), localPlatformsFile.getAbsolutePath()), e);
+     }
+ 
+-    if (!preferences.containsKey("rewriting") || !"disabled".equals(preferences.get("rewriting"))) {
+-      try {
+-        rewriteKeysOfOldPlatformsTxtAndWarnAboutIt();
+-      } catch (IOException e) {
+-        throw new TargetPlatformException(e);
+-      }
+-    }
+-
+     File progFile = new File(folder, "programmers.txt");
+     try {
+       if (progFile.exists() && progFile.canRead()) {

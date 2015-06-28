@@ -1,0 +1,44 @@
+Source: arduino
+Section: electronics
+Priority: extra
+Maintainer: ShorTie
+Uploaders: Philip Hands <phil@hands.com>
+Build-Depends: debhelper, javahelper, default-jdk, default-jre, libastylej-jni,
+ libjssc-java, libjna-java, libjsch-java, libjmdns-java,
+ libcommons-logging-java, libcommons-httpclient-java, libcommons-exec-java, ant,
+ astyle, extra-xdg-menus, policykit-1, default-jre, libastylej-jni,
+ avr-libc, avrdude, gcc, gcc-avr, bossa-cli, gcc-arm-none-eabi
+Standards-Version: 3.9.5
+Homepage: http://www.arduino.cc
+Vcs-Git: git://anonscm.debian.org/collab-maint/arduino.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/arduino.git
+
+
+Package: arduino
+Architecture: all
+Depends: ${java:Depends}, ${misc:Depends},
+ arduino-core (= ${binary:Version}), libastylej-jni
+Recommends: extra-xdg-menus, policykit-1, astyle
+Description: AVR development board IDE and built-in libraries
+ Arduino is an open-source electronics prototyping platform based on
+ flexible, easy-to-use hardware and software. It's intended for artists,
+ designers, hobbyists, and anyone interested in creating interactive
+ objects or environments.
+ .
+ This package will install the integrated development environment that
+ allows for program writing, code verfication, compiling, and uploading
+ to the Arduino development board. Libraries and example code will also
+ be installed.
+
+Package: arduino-core
+Architecture: all
+Depends: ${misc:Depends}, gcc-avr (>= 4.7.0), avrdude, gcc, avr-libc (>= 1.8.0)
+Recommends: bossa-cli
+Suggests: arduino-mk
+Description: Code, examples, and libraries for the Arduino platform
+ Arduino is an open hardware microcontroller platform.  This package contains
+ the minimal set of tools to allow one to program an Arduino.  It also contains
+ examples and libraries. For a CLI, see the 'arduino-mk' package.
+ .
+ This package does not include the Java based Integrated Development
+ Environment, which can be found in the 'arduino' package.

@@ -1,0 +1,26 @@
+Index: Arduino-1.6.4/.classpath
+===================================================================
+--- Arduino-1.6.4.orig/.classpath
++++ Arduino-1.6.4/.classpath
+@@ -18,8 +18,6 @@
+ 	<classpathentry kind="lib" path="app/lib/commons-httpclient-3.1.jar"/>
+ 	<classpathentry kind="lib" path="app/lib/commons-logging-1.0.4.jar"/>
+ 	<classpathentry kind="lib" path="app/lib/jmdns-3.4.1.jar"/>
+-	<classpathentry kind="lib" path="app/lib/jsch-0.1.50.jar"/>
+-	<classpathentry kind="lib" path="app/lib/jssc-2.8.0.jar"/>
+ 	<classpathentry kind="lib" path="app/lib/bcpg-jdk15on-152.jar"/>
+ 	<classpathentry kind="lib" path="app/lib/bcprov-jdk15on-152.jar"/>
+ 	<classpathentry kind="lib" path="app/lib/jackson-core-2.2.3.jar"/>
+Index: Arduino-1.6.4/app/.classpath
+===================================================================
+--- Arduino-1.6.4.orig/app/.classpath
++++ Arduino-1.6.4/app/.classpath
+@@ -19,8 +19,6 @@
+ 	<classpathentry kind="lib" path="lib/jackson-databind-2.2.3.jar"/>
+ 	<classpathentry kind="lib" path="lib/jackson-module-mrbean-2.2.3.jar"/>
+ 	<classpathentry kind="lib" path="lib/jmdns-3.4.1.jar"/>
+-	<classpathentry kind="lib" path="lib/jsch-0.1.50.jar"/>
+-	<classpathentry kind="lib" path="lib/jssc-2.8.0.jar"/>
+ 	<classpathentry kind="lib" path="test-lib/junit-4.11.jar"/>
+ 	<classpathentry kind="lib" path="test-lib/fest-assert-1.2.jar"/>
+ 	<classpathentry kind="lib" path="test-lib/fest-reflect-1.2.jar"/>

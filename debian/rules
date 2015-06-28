@@ -1,0 +1,85 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+export JAVA_HOME=/usr/lib/jvm/default-java
+export CLASSPATH=\
+/usr/share/java/jna.jar:\
+/usr/share/java/jssc.jar:\
+/usr/share/java/jsch.jar:\
+/usr/share/java/jmdns.jar:\
+/usr/share/java/commons-logging.jar:\
+/usr/share/java/commons-httpclient.jar:\
+/usr/share/java/commons-exec.jar
+
+SVNTAG=$(shell dpkg-parsechangelog | grep Version | cut -f2 -d" " | sed 's/[0-9]*:\([0-9].*\)+dfsg2-[0-9]/\1/')
+
+%:
+	dh $@ --with javahelper
+
+override_dh_clean:
+	cd arduino-core && ant clean
+	cd build && ant clean
+	rm -f debian/permission-checker/*.class
+	dh_clean
+
+override_jh_build:
+	jh_linkjars
+	mkdir -p build/linux/work/hardware/tools
+	cd arduino-core && ant
+	cd build && ant
+	rm -f build/linux/work/lib/version.txt && echo $(SVNTAG) > build/linux/work/lib/version.txt #comment out after beta
+	javac debian/permission-checker/arduinopc.java
+	cd debian/permission-checker && jar cfe arduinopc.jar arduinopc *.class
+	mv debian/permission-checker/*.jar .
+
+
+override_dh_installchangelogs:
+	dh_installchangelogs -k build/linux/work/revisions.txt
+
+override_dh_compress:
+	dh_compress -X.ino
+
+override_dh_install:
+	find build/linux/work -type d -empty -delete
+	dh_install -Xlicense -XLICENSE -XLicense -XMangler/make.sh -X.elf -X.a -X.lib -X.min.js
+	mkdir -p debian/arduino-core/usr/share/arduino/lib
+	mv debian/arduino/usr/share/arduino/lib/*.txt debian/arduino-core/usr/share/arduino/lib
+	cp hardware/arduino/sam/variants/arduino_due_x/libsam_sam3x8e_gcc_rel.* debian/arduino-core/usr/share/arduino/hardware/arduino/sam/variants/arduino_due_x
+	chmod +x \
+    debian/arduino-core/usr/share/arduino/hardware/arduino/avr/bootloaders/optiboot/makeall \
+    debian/arduino-core/usr/share/arduino/hardware/arduino/avr/firmwares/wifishield/scripts/ArduinoWifiShield_upgrade.sh \
+    debian/arduino-core/usr/share/arduino/hardware/arduino/avr/firmwares/wifishield/scripts/ArduinoWifiShield_upgrade_mac.sh \
+    debian/arduino-core/usr/share/arduino/hardware/arduino/sam/system/CMSIS/CMSIS/Documentation/DSP_Lib/html/installdox \
+    debian/arduino-core/usr/share/arduino/libraries/WiFi/extras/scripts/ArduinoWifiShield_upgrade.sh
+
+override_dh_installdocs:
+	dh_installdocs
+
+override_jh_depends:
+	jh_depends -jdefault
+
+copyright_check:
+	${MAKE} -f /usr/share/cdbs/1/rules/utils.mk debian/stamp-copyright-check
+	rm debian/stamp-copyright-check
+
+DESTDIR=$(CURDIR)/debian/Arduino-$(SVNTAG)
+TARGZFILE=arduino_$(SVNTAG).orig.tar.gz
+TARXZFILE=arduino_$(SVNTAG)+dfsg2.orig.tar.xz
+
+get-orig-source:
+	uscan --download-current-version --rename
+	jh_repack --version $(SVNTAG) ../arduino_$(SVNTAG)
+	tar -xzf ../$(TARGZFILE) -C debian/
+	find $(DESTDIR) -type f -iname *.jar -or -iname *.tgz -or -iname *.so\
+                    -or -iname .cvsignore -or -iname *.bz2 -or -iname *macosx*\
+                    -or -iname *windows* -or -iname *.exe -or -iname *.dll\
+                    -or -iname *.elf -or -iname *.min.js | xargs -n1 rm -rf;\
+	rm -rf $(DESTDIR)/build/linux/dist/tools;\
+	#upstream set a bunch of files as execultable that should not be. remove the -x bit
+	#find $(DESTDIR) -type f -iname *.jpg -or -iname *.java -or -iname *.pde -or -iname *.h -or -iname *.cpp -or -iname *.c -or -iname makefile -or -iname key*.txt -or -iname key*.gz -or -iname pref*.txt -or -iname '*.txt' -print0 | xargs -0 chmod -x;\
+	tar Jcf $(CURDIR)/../$(TARXZFILE) -C $(CURDIR)/debian Arduino-1.6.5;\
+	rm -fr $(DESTDIR);\
+	rm -fr ../$(TARGZFILE)
+

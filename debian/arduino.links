@@ -1,0 +1,4 @@
+/usr/share/java/jna.jar /usr/share/arduino/lib/jna.jar
+/usr/share/java/jssc.jar /usr/share/arduino/lib/jssc.jar
+/usr/lib/jni/libastylej.so /usr/share/arduino/lib/libastylej.so
+

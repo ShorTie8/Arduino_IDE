@@ -1,0 +1,15 @@
+﻿Description: Adjust arch to arm for Raspberry Pi
+
+Index: Arduino-1.6.5/build/build.xml
+===================================================================
+--- Arduino-1.6.5.orig/build/build.xml
++++ Arduino-1.6.5/build/build.xml
+@@ -17,7 +17,7 @@
+   </condition>
+   <condition property="platform" value="macosx"><os family="mac" /></condition>
+   <condition property="platform" value="windows"><os family="windows" /></condition>
+-  <condition property="platform" value="linux32"><os family="unix" arch="i386" /></condition>
++  <condition property="platform" value="linux32"><os family="unix" arch="arm" /></condition>
+   <condition property="platform" value="linux64"><os family="unix" arch="amd64" /></condition>
+ 
+   <condition property="macosx"><equals arg1="${platform}" arg2="macosx-old" /></condition>
