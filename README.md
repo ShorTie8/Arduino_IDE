@@ -1,5 +1,15 @@
 Arduino_IDE
 
+Run the script to build the IDE.
+It will download everything from github, compile and assemble the IDE.
+
+Have A Great Day
+ShorTie
+
+
+
+Old
+
 A Debian .deb builder for ARM Boards
 
 From the within the Arduino directory
