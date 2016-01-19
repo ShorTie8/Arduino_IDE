@@ -13,7 +13,7 @@
 # The rest are mainly for if your playing with the sources, and my debug, lol.
 echo -e "\n\nConfiguration values\n\n"
 
-#Update_git="yes"
+Update_git="yes"
 
 #ReBuild_toolchain_avr="yes"
 #ReBuild_avrdude="yes"
@@ -40,7 +40,7 @@ echo -e "\n\nSystem check\n\n"
 start_time=$(date)
 echo "Checking for root .. "
 if [ `id -u` != 0 ]; then
-    echo -e "\n\nOoops, So, So, Sorry, We play only as root !!\nAnd nop to sudo su either\nHave A Great Day\n\n"
+    echo -e "\n\nOoops, So, So, Sorry, We play only as root !!\nTry sudo\nHave A Great Day\n\n"
     exit -1
 else
     echo "Yuppers .. :)~"
