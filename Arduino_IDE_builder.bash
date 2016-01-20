@@ -15,10 +15,10 @@ echo -e "\n\nConfiguration values\n\n"
 
 Update_git="yes"
 
+#ReBuild_Arduino="yes"
 #ReBuild_toolchain_avr="yes"
 #ReBuild_avrdude="yes"
 #ReBuild_arduino_builder="yes"
-#ReBuild_Arduino="yes"
 #ReBuild_astyle="yes"
 #ReBuild_ctags="yes"
 
@@ -38,6 +38,9 @@ echo -e "\n\nSystem check\n\n"
 
 # Check to see if Arduino_IDE_builder.bash is being run as root
 start_time=$(date)
+Start_Directory=`pwd`
+Working_Directory=`pwd`/Arduino/build
+
 echo "Checking for root .. "
 if [ `id -u` != 0 ]; then
     echo -e "\n\nOoops, So, So, Sorry, We play only as root !!\nTry sudo\nHave A Great Day\n\n"
@@ -68,10 +71,10 @@ elif [ `uname -s` == "Linux" ]; then
     fi
 fi
 
-
 # Checking for go
 if [ `uname -s` == "Linux" ]; then
     if [[ ! -f /usr/local/go/bin/go ]]; then
+        echo -e "\n\nInstalling go for arduino-builder\n"
         cd /usr/local
         wget https://storage.googleapis.com/golang/go1.4.3.src.tar.gz
         tar -xf go1.4.3.src.tar.gz
@@ -84,7 +87,8 @@ if [ `uname -s` == "Linux" ]; then
         /usr/local/go/bin/./go version
     fi
 else
-    echo -e "\n\nSo So Sorry, don't know how to check for go"
+    echo -e "\n\nSo So Sorry, don't know how to check for go\n"
+    exit -1
 fi
 
 # Determine system type
@@ -123,9 +127,6 @@ elif [ `uname -s | grep MINGW` ]; then
     exit 0
 fi
 echo -e "\n\nBuilding Arduino_IDE for $Sys\n\n"
-
-Start_Directory=`pwd`
-Working_Directory=`pwd`/Arduino/build
 
 
 if [[ ! -d Arduino ]]; then
@@ -271,7 +272,7 @@ if [[ $ReBuild_astyle == "yes" ]]; then
     fi
 fi
 
-if [ $Update_git == "yes" ]; then
+if [[ $Update_git == "yes" ]]; then
     echo -e "\n\nChecking for astyle github updates\n"
     cd astyle
     if [[ ! `git status -uno | grep up-to-date` ]]; then
@@ -473,7 +474,7 @@ if [[ ! -d arduino-builder ]]; then
     cd ..
 fi
 
-if [ $Update_git == "yes" ]; then
+if [[ $Update_git == "yes" ]]; then
     echo -e "\n\nChecking for github updates for Arduino_builder\n"
     cd arduino-builder
     if [[ ! `git status -uno | grep up-to-date` ]]; then
@@ -524,14 +525,22 @@ avr_gcc_sha=`cat linux/avr-gcc-*-$SysTag-*gnu.tar.bz2.sha`
 avrdude_sha=`cat linux/avrdude-*-$SysTag-*gnu.tar.bz2.sha`
 arduino_builder_sha=`cat  arduino-builder-*tar.bz2.sha`
 
+# Arduino_IDE
+if [[ $ReBuild_Arduino == "yes" ]]; then
+    echo -e "\n\nDelete stuff to enable Rebuilding of the IDE\n"
+    ant clean
+fi
 
-# Building Arduino_IDE
-ant clean build
-mkdir -p linux/work/tools-builder/ctags/5.8-arduino5
-cp ctags/ctags linux/work/tools-builder/ctags/5.8-arduino5/
+if [[ ! -f linux/work/arduino ]]; then
+    echo -e "\n\nBuilding Arduino IDE for $Sys\n"
+    ant clean build
+    mkdir -p linux/work/tools-builder/ctags/5.8-arduino5
+    cp ctags/ctags linux/work/tools-builder/ctags/5.8-arduino5/
+fi
 
-echo $Start_time
+echo $start_time
 date
+echo -e "\n\nHave Fun and A Great Day\nShorTie\n"
 exit 0
 
 

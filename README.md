@@ -8,6 +8,9 @@ And with a little help Mac && Windows too...
 What it does is use github to get all the various programs.
 Compiles them and builds the IDE in 1 simple script .. :)~
 
+Normally, Update_git is the only 1 needed to be un-rem'd
+The rest are mainly for if your playing with the sources, and my debug, lol.
+
 ### Usage
 ```
 sudo ./Arduino_IDE_builder.bash
@@ -56,19 +59,13 @@ ShorTie
 
 
 
-Old
+### Old
 
 A Debian .deb builder for ARM Boards
 
 From the within the Arduino directory
 
-    1. git clone https://github.com/ShorTie8/Arduino_IDE
-
-    2. ln -s Arduino_IDE/debian debian
-
-    3. dpkg-buildpackage -uc -b -tc
-
-Ya'll Have A Great Day now
-
-ShorTie
-
+```
+ln -s Arduino_IDE/debian debian
+dpkg-buildpackage -uc -b -tc
+```
