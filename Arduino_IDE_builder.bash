@@ -21,6 +21,7 @@ Update_git="yes"
 #ReBuild_arduino_builder="yes"
 #ReBuild_astyle="yes"
 #ReBuild_ctags="yes"
+#ReBuild_listSerialPortsC="yes"
 
 #Bossac="yes"
 #Coan="yes"
@@ -32,6 +33,8 @@ Silence_is_Golden="yes"
 #Toolchain_avr_version="3.4.5"
 #Toolchain_avr_version="3.5.0"
 
+
+
 # Script,
 # *****************************************************************
 echo -e "\n\nSystem check\n\n"
@@ -41,6 +44,7 @@ start_time=$(date)
 Start_Directory=`pwd`
 Working_Directory=`pwd`/Arduino/build
 
+
 echo "Checking for root .. "
 if [ `id -u` != 0 ]; then
     echo -e "\n\nOoops, So, So, Sorry, We play only as root !!\nTry sudo\nHave A Great Day\n\n"
@@ -49,9 +53,18 @@ else
     echo "Yuppers .. :)~"
 fi
 
+if [[ $Update_git == "yes" ]]; then
+    echo -e "\n\nChecking to see if I'm update\n\n"
+    # http://stackoverflow.com/questions/3258243/check-if-pull-needed-in-git
+    if [[ ! `git status -uno | grep up-to-date` ]]; then
+        git remote -v update
+        echo -e "\n\nUpdating me\nRestart required\n\n"
+        exit 1
+    fi
+fi
+
 Java_Version=`java -version 2>&1 | sed 's/java version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q'`
 echo $JAVA_HOME
-
 
 # Sortta think this needs set in the IDE too...
 # Do not assume env.JAVA_HOME is set right
@@ -70,6 +83,7 @@ elif [ `uname -s` == "Linux" ]; then
         exit -1
     fi
 fi
+
 
 # Checking for go
 if [ `uname -s` == "Linux" ]; then
@@ -144,7 +158,6 @@ fi
 if [[ $Update_git == "yes" ]]; then
     echo -e "\n\nChecking for Arduino_IDE github updates\n\n"
     cd Arduino
-    # http://stackoverflow.com/questions/3258243/check-if-pull-needed-in-git
     if [[ ! `git status -uno | grep up-to-date` ]]; then
         git remote -v update
         cd build
@@ -155,7 +168,6 @@ if [[ $Update_git == "yes" ]]; then
 else
     cd Arduino/build
 fi
-
 
 # toolchain-avr
 if [[ ! -d toolchain-avr ]]; then
@@ -192,12 +204,14 @@ if [[ $ReBuild_toolchain_avr == "yes" ]]; then
     fi
 fi
 
+
 if [[ $ReBuild_avrdude == "yes" ]] || [[ $ReBuild_toolchain_avr == "yes" ]]; then
     echo -e "\n\nDelete stuff to enable Rebuilding of avrdude\n\n"
     if [[ `ls linux/avrdude*bz2*` ]]; then
         rm -v linux/avrdude*arduino*
     fi
 fi
+
 
 if [ ! `ls linux/avr-gcc*bz2` ]; then
     echo -e "\n\nBuilding toolchain-avr\n\n"
@@ -262,6 +276,7 @@ if [[ ! -d astyle ]]; then
     sed -i 's/svn co/svn co  --quiet/' astyle/setup.bash
 fi
 
+
 if [[ $ReBuild_astyle == "yes" ]]; then
     echo -e "\n\nDelete stuff to enable Rebuilding of astyle\n"
     if [ `ls libastylej*.zip` ]; then
@@ -283,8 +298,6 @@ if [[ $Update_git == "yes" ]]; then
     cd ..
 fi
 
-# Note: if the directory was the same as the name of the file it be easier to upgrade
-# <param name="archive_file" value="./libastylej-2.05.1.zip" />
 
 if [[ ! -f libastylej-2.05.1.zip ]]; then
     echo -e "\n\nBuilding astyle\n"
@@ -355,6 +368,7 @@ if [[ $Update_git == "yes" ]]; then
     cd ..
 fi
 
+
 if [[ ! -f ctags/ctags ]]; then
     echo -e "\n\nBuilding ctags\n"
     cd ctags
@@ -373,6 +387,7 @@ fi
 if [[ $Bossac == "yes" ]]; then
 
     if [[ ! `ls linux/bossac*arduino*` ]]; then
+        echo -e "\n\nBuilding bossac\n"
         # bossac  bossac-1.6.1-arduino-i486-linux-gnu.tar.gz
         #    apt-get install libwxbase3.0-dev
 
@@ -402,6 +417,7 @@ fi
 if [[ $Coan == "yes" ]]; then
 
     if [[ ! `ls linux/coan*arduino*` ]]; then
+        echo -e "\n\nBuilding coan\n"
         if [[ ! -f coan-5.2.tar.gz  ]]; then
 	        wget -N http://sourceforge.net/projects/coan2/files/v5.2/coan-5.2.tar.gz
         fi
@@ -422,6 +438,85 @@ fi
 
 # End Coan
 
+
+# liblistserials
+if [[ ! -d listSerialPortsC ]]; then
+    echo -e "\n\nGetting listSerialPortsC\n"
+    git clone https://github.com/facchinm/listSerialPortsC.git
+    cd listSerialPortsC
+    rm -rvf libserialport
+    git clone https://github.com/facchinm/libserialport.git
+    cd $Working_Directory
+fi
+
+if [[ $Update_git == "yes" ]]; then
+    echo -e "\n\nChecking for listSerialPortsC github updates\n"
+    cd listSerialPortsC
+    if [[ ! `git status -uno | grep up-to-date` ]]; then
+        git remote -v update
+        rm -v ../liblistSerials*.zip
+        rm -v ../liblistSerials*.sha
+    fi
+    cd libserialport
+    if [[ ! `git status -uno | grep up-to-date` ]]; then
+        git remote -v update
+        rm -v ../../liblistSerials*.zip
+        rm -v ../../liblistSerials*.sha
+    fi
+    cd $Working_Directory
+fi
+
+
+if [[ $ReBuild_listSerialPortsC == "yes" ]]; then
+    echo -e "\n\nDelete stuff to enable Rebuilding of listSerialPortsC\n"
+    if [ `ls liblistSerials*.zip` ]; then
+        rm -v ./liblistSerials*.zip
+    fi
+    if [ `ls liblistSerials*.sha` ]; then
+        rm -v ./liblistSerials*.sha
+    fi
+fi
+
+if [[ ! `ls liblistSerials*.zip` ]]; then
+    echo -e "\n\nBuilding listSerialPortsC\n"
+    VERSION="1.0.4"
+    cd listSerialPortsC
+    if [ `uname -s` == "Linux" ]; then
+        mkdir -p distrib/$Sys
+        cd libserialport
+        if [[ -f make ]]; then
+            make distclean
+        fi
+        ./autogen.sh
+        ./configure --silent
+        make clean
+        make -j $JOBS
+        cd ..
+        if [ $Sys == "arm" ]; then
+            gcc -s main.c libserialport/linux_termios.c libserialport/linux.c libserialport/serialport.c -Ilibserialport/  -o listSerialC
+            gcc -s jnilib.c libserialport/linux_termios.c libserialport/linux.c libserialport/serialport.c -Ilibserialport/ -I$JAVA_HOME/include -I$JAVA_HOME/include/linux -shared -fPIC -o liblistSerialsj.so
+        else
+            gcc -m$Bits -s main.c libserialport/linux_termios.c libserialport/linux.c libserialport/serialport.c -Ilibserialport/  -o listSerialC
+            gcc -m$Bits -s jnilib.c libserialport/linux_termios.c libserialport/linux.c libserialport/serialport.c -Ilibserialport/ -I$JAVA_HOME/include -I$JAVA_HOME/include/linux -shared -fPIC -o liblistSerialsj.so
+        fi
+    elif [ `uname -s` == "Darwin" ]; then
+        # UN-tested
+        exit -1
+    fi
+
+    cp listSerialC distrib/$Sys/listSerialC
+    cp liblistSerialsj.so distrib/$Sys
+    mv distrib liblistSerials-$VERSION
+    zip -r liblistSerials-$VERSION.zip  liblistSerials-$VERSION
+    shasum liblistSerials-$VERSION.zip | awk '{ print $1 }' > liblistSerials-$VERSION.zip.sha
+    rm -rf liblistSerials-$VERSION
+
+    mv liblistSerials-$VERSION.zip* $Working_Directory
+    cd $Working_Directory
+fi
+
+# End liblistserials
+
 # OpenOCD
 if [[ $OpenOCD == "yes" ]]; then
 
@@ -440,7 +535,6 @@ if [[ $OpenOCD == "yes" ]]; then
             cd ..
         fi
 
-
         cd OpenOCD
         PREFIX=`pwd`/OpenOCD-0.9.0-dev-arduino
         #bootstrap: Error: libtool is required
@@ -457,6 +551,7 @@ if [[ $OpenOCD == "yes" ]]; then
 fi
 
 # OpenOCD
+
 
 # arduino-builder
 if [[ ! -d arduino-builder ]]; then
