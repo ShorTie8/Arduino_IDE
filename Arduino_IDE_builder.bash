@@ -13,7 +13,7 @@
 # The rest are mainly for if your playing with the sources, and my debug, lol.
 echo -e "\n\nConfiguration values\n\n"
 
-Update_git="yes"
+#Update_git="yes"
 #Update_Arduino_git="yes"
 
 #ReBuild_Arduino="yes"
@@ -167,13 +167,8 @@ if [[ $Update_Arduino_git == "yes" ]]; then
     # Receiving objects: 100% (67507/67507), 1.16 GiB | 330.00 KiB/s, done.
     git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
+        git checkout -- .
         git pull
-        # Receiving objects: 100% (4609/4609), 65.10 MiB | 332.00 KiB/s, done.
-        #if [[ $Sys != "arm" ]]; then
-        #    git pull --depth 1 https://github.com/arduino/Arduino.git
-        #else
-        #    git pull --depth 1 https://github.com/NicoHood/Arduino.git
-        #fi
         cd build
         ant clean
     else
