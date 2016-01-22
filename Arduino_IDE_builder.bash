@@ -13,7 +13,7 @@
 # The rest are mainly for if your playing with the sources, and my debug, lol.
 echo -e "\n\nConfiguration values\n\n"
 
-#Update_git="yes"
+Update_git="yes"
 #Update_Arduino_git="yes"
 
 #ReBuild_Arduino="yes"
@@ -59,7 +59,7 @@ if [[ $Update_git == "yes" ]]; then
     git remote update
     # http://stackoverflow.com/questions/3258243/check-if-pull-needed-in-git
     if [[ ! `git status -uno | grep up-to-date` ]]; then
-        git remote -v update
+        git pull
         echo -e "\n\nUpdating me\nRestart required\n\n"
         exit 1
     fi
@@ -167,7 +167,7 @@ if [[ $Update_Arduino_git == "yes" ]]; then
     # Receiving objects: 100% (67507/67507), 1.16 GiB | 330.00 KiB/s, done.
     git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
-        git remote -v update
+        git pull
         # Receiving objects: 100% (4609/4609), 65.10 MiB | 332.00 KiB/s, done.
         #if [[ $Sys != "arm" ]]; then
         #    git pull --depth 1 https://github.com/arduino/Arduino.git
@@ -207,7 +207,7 @@ if [[ $Update_git == "yes" ]]; then
     cd toolchain-avr
     git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
-        git remote -v update
+        git pull
         rm -v ../linux/avr-gcc*arduino* ../linux/avrdude*arduino*
     fi
     cd ..
@@ -308,7 +308,7 @@ if [[ $Update_git == "yes" ]]; then
     cd astyle
     git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
-        git remote -v update
+        git pull
         rm -v ../libastylej*.zip
         rm -v ../libastylej*.sha
     fi
@@ -372,7 +372,7 @@ if [[ $Update_git == "yes" ]]; then
     cd ctags
     git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
-        git remote -v update
+        git pull
         if [[ -f ctags ]]; then
             rm -v ctags
         fi
@@ -467,14 +467,14 @@ if [[ $Update_git == "yes" ]]; then
     cd listSerialPortsC
     git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
-        git remote -v update
+        git pull
         rm -v ../liblistSerials*.zip
         rm -v ../liblistSerials*.sha
     fi
     cd libserialport
     git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
-        git remote -v update
+        git pull
         rm -v ../../liblistSerials*.zip
         rm -v ../../liblistSerials*.sha
     fi
@@ -545,7 +545,7 @@ if [[ $OpenOCD == "yes" ]]; then
         if [ $Update_git == "yes" ]; then
             cd OpenOCD
             if [[ ! `git status -uno | grep up-to-date` ]]; then
-                git remote -v update
+                git pull
                 rm ctags
             fi
             cd ..
@@ -590,7 +590,7 @@ if [[ $Update_git == "yes" ]]; then
     cd arduino-builder
     git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
-        git remote -v update
+        git pull
         #rm arduino-builder
         export PATH=$PATH:/usr/local/go/bin/
         export GOPATH=`pwd`
