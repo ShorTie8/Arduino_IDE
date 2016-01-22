@@ -13,7 +13,7 @@
 # The rest are mainly for if your playing with the sources, and my debug, lol.
 echo -e "\n\nConfiguration values\n\n"
 
-Update_git="yes"
+#Update_git="yes"
 
 #ReBuild_Arduino="yes"
 #ReBuild_toolchain_avr="yes"
@@ -55,6 +55,7 @@ fi
 
 if [[ $Update_git == "yes" ]]; then
     echo -e "\n\nChecking to see if I'm update\n"
+    git remote update
     # http://stackoverflow.com/questions/3258243/check-if-pull-needed-in-git
     if [[ ! `git status -uno | grep up-to-date` ]]; then
         git remote -v update
@@ -162,15 +163,24 @@ fi
 if [[ $Update_git == "yes" ]]; then
     echo -e "\n\nChecking for Arduino_IDE github updates\n\n"
     cd Arduino
+    # Receiving objects: 100% (67507/67507), 1.16 GiB | 330.00 KiB/s, done.
+    #git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
-        git remote -v update
+        #git remote -v update
+        # Receiving objects: 100% (4609/4609), 65.10 MiB | 332.00 KiB/s, done.
+        if [[ $Sys != "arm" ]]; then
+            git clone --depth 1 https://github.com/arduino/Arduino.git
+        else
+            git clone --depth 1 -b ARM https://github.com/NicoHood/Arduino.git
+        fi
         cd build
         ant clean
     else
         cd build
     fi
 else
-    cd Arduino/build
+    #cd Arduino/build
+    cd $Working_Directory
 fi
 
 # toolchain-avr
@@ -194,6 +204,7 @@ fi
 if [[ $Update_git == "yes" ]]; then
     echo -e "\n\nChecking for toolchain-avr github updates\n\n"
     cd toolchain-avr
+    git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
         git remote -v update
         rm -v ../linux/avr-gcc*arduino* ../linux/avrdude*arduino*
@@ -294,6 +305,7 @@ fi
 if [[ $Update_git == "yes" ]]; then
     echo -e "\n\nChecking for astyle github updates\n"
     cd astyle
+    git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
         git remote -v update
         rm -v ../libastylej*.zip
@@ -349,24 +361,19 @@ fi
 
 if [[ $ReBuild_ctags == "yes" ]]; then
     echo -e "\n\nDelete stuff to enable Rebuilding of ctags\n"
-    if [[ `ls linux/work/tools-builder/ctags/5.8-arduino5/ctags` ]]; then
-        rm -v linux/work/tools-builder/ctags/5.8-arduino5/ctags
-    fi
-    if [ `ls arduino-builder/arduino-builder-$Sys/tools/5.8-arduino5/ctags` ]; then
-        rm -v arduino-builder/arduino-builder-$Sys/tools/5.8-arduino5/ctags
+    if [[ -f ctags/ctags ]]; then
+        rm -v ctags/ctags
     fi
 fi
 
 if [[ $Update_git == "yes" ]]; then
     echo -e "\n\nUpdate ctags git\n"
     cd ctags
+    git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
         git remote -v update
-        if [[ `ls linux/work/tools-builder/ctags/5.8-arduino5/ctags` ]]; then
-            rm -v linux/work/tools-builder/ctags/5.8-arduino5/ctags
-        fi
-        if [ `ls arduino-builder/arduino-builder-$Sys/tools/5.8-arduino5/ctags` ]; then
-            rm -v arduino-builder/arduino-builder-$Sys/tools/5.8-arduino5/ctags
+        if [[ -f ctags ]]; then
+            rm -v ctags
         fi
     fi
     cd ..
@@ -375,6 +382,7 @@ fi
 
 if [[ ! -f ctags/ctags ]]; then
     echo -e "\n\nBuilding ctags\n"
+    #[new tag]         5.8-arduino6 -> 5.8-arduino6
     cd ctags
     if [[ -f ctags ]]; then
         make distclean
@@ -456,12 +464,14 @@ fi
 if [[ $Update_git == "yes" ]]; then
     echo -e "\n\nChecking for listSerialPortsC github updates\n"
     cd listSerialPortsC
+    git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
         git remote -v update
         rm -v ../liblistSerials*.zip
         rm -v ../liblistSerials*.sha
     fi
     cd libserialport
+    git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
         git remote -v update
         rm -v ../../liblistSerials*.zip
@@ -483,7 +493,8 @@ fi
 
 if [[ ! `ls liblistSerials*.zip` ]]; then
     echo -e "\n\nBuilding listSerialPortsC\n"
-    VERSION="1.0.4"
+    #VERSION="1.0.4"
+    VERSION=`git tag`
     cd listSerialPortsC
     if [ `uname -s` == "Linux" ]; then
         mkdir -p distrib/$Sys
@@ -576,9 +587,13 @@ fi
 if [[ $Update_git == "yes" ]]; then
     echo -e "\n\nChecking for github updates for Arduino_builder\n"
     cd arduino-builder
+    git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
         git remote -v update
-        rm arduino-builder
+        #rm arduino-builder
+        export PATH=$PATH:/usr/local/go/bin/
+        export GOPATH=`pwd`
+        export GOROOT=/usr/local/go
         go clean
     fi
     cd ..
@@ -610,7 +625,8 @@ if [[ ! -f arduino-builder/arduino-builder ]]; then
     wget https://raw.githubusercontent.com/arduino/arduino-builder/master/src/arduino.cc/builder/hardware/platform.keys.rewrite.txt --directory-prefix=arduino-builder-$Sys/hardware
     wget https://raw.githubusercontent.com/arduino/arduino-builder/master/src/arduino.cc/builder/hardware/platform.txt --directory-prefix=arduino-builder-$Sys/hardware
 
-    Arduino_Builder_version=`arduino-builder-$Sys/./arduino-builder -version | grep Builder | cut -d " " -f3`
+    #Arduino_Builder_version=`arduino-builder-$Sys/./arduino-builder -version | grep Builder | cut -d " " -f3`
+    Arduino_Builder_version=`git tag`
     tar -cjSf ./arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2 -C ./arduino-builder-$Sys/ ./
     shasum arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2 | awk '{ print $1 }' > arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2.sha
     cp -v arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2* $Working_Directory
