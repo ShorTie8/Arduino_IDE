@@ -13,7 +13,7 @@
 # The rest are mainly for if your playing with the sources, and my debug, lol.
 echo -e "\n\nConfiguration values\n\n"
 
-#Update_git="yes"
+Update_git="yes"
 
 #ReBuild_Arduino="yes"
 #ReBuild_toolchain_avr="yes"
@@ -164,15 +164,15 @@ if [[ $Update_git == "yes" ]]; then
     echo -e "\n\nChecking for Arduino_IDE github updates\n\n"
     cd Arduino
     # Receiving objects: 100% (67507/67507), 1.16 GiB | 330.00 KiB/s, done.
-    #git remote update
+    git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
-        #git remote -v update
+        git remote -v update
         # Receiving objects: 100% (4609/4609), 65.10 MiB | 332.00 KiB/s, done.
-        if [[ $Sys != "arm" ]]; then
-            git clone --depth 1 https://github.com/arduino/Arduino.git
-        else
-            git clone --depth 1 -b ARM https://github.com/NicoHood/Arduino.git
-        fi
+        #if [[ $Sys != "arm" ]]; then
+        #    git pull --depth 1 https://github.com/arduino/Arduino.git
+        #else
+        #    git pull --depth 1 https://github.com/NicoHood/Arduino.git
+        #fi
         cd build
         ant clean
     else
