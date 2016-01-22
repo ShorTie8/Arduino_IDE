@@ -14,6 +14,7 @@
 echo -e "\n\nConfiguration values\n\n"
 
 #Update_git="yes"
+#Update_Arduino_git="yes"
 
 #ReBuild_Arduino="yes"
 #ReBuild_toolchain_avr="yes"
@@ -160,7 +161,7 @@ if [[ ! -d Arduino ]]; then
     rm -v Arduino/build/linux/avrdude*
 fi
 
-if [[ $Update_git == "yes" ]]; then
+if [[ $Update_Arduino_git == "yes" ]]; then
     echo -e "\n\nChecking for Arduino_IDE github updates\n\n"
     cd Arduino
     # Receiving objects: 100% (67507/67507), 1.16 GiB | 330.00 KiB/s, done.
