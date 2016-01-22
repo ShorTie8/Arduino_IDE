@@ -45,7 +45,7 @@ Start_Directory=`pwd`
 Working_Directory=`pwd`/Arduino/build
 
 
-echo "Checking for root .. "
+echo -e "\n\nChecking for root .. \n"
 if [ `id -u` != 0 ]; then
     echo -e "\n\nOoops, So, So, Sorry, We play only as root !!\nTry sudo\nHave A Great Day\n\n"
     exit -1
@@ -54,7 +54,7 @@ else
 fi
 
 if [[ $Update_git == "yes" ]]; then
-    echo -e "\n\nChecking to see if I'm update\n\n"
+    echo -e "\n\nChecking to see if I'm update\n"
     # http://stackoverflow.com/questions/3258243/check-if-pull-needed-in-git
     if [[ ! `git status -uno | grep up-to-date` ]]; then
         git remote -v update
@@ -63,6 +63,7 @@ if [[ $Update_git == "yes" ]]; then
     fi
 fi
 
+echo -e "\n\nJava Checking and setup\n"
 Java_Version=`java -version 2>&1 | sed 's/java version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q'`
 echo $JAVA_HOME
 
@@ -84,8 +85,8 @@ elif [ `uname -s` == "Linux" ]; then
     fi
 fi
 
-
 # Checking for go
+echo -e "\n\nChecking for go\n"
 if [ `uname -s` == "Linux" ]; then
     if [[ ! -f /usr/local/go/bin/go ]]; then
         echo -e "\n\nInstalling go for arduino-builder\n"
@@ -105,7 +106,9 @@ else
     exit -1
 fi
 
+
 # Determine system type
+echo -e "\n\nDetermining system type\n"
 if [ `uname -s` == "Linux" ]; then
     if [ `uname -m | grep arm` ]; then
         Sys="arm"
@@ -141,6 +144,7 @@ elif [ `uname -s | grep MINGW` ]; then
     exit 0
 fi
 echo -e "\n\nBuilding Arduino_IDE for $Sys\n\n"
+
 
 
 if [[ ! -d Arduino ]]; then
