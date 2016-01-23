@@ -482,20 +482,20 @@ fi
 
 if [[ $ReBuild_listSerialPortsC == "yes" ]]; then
     echo -e "\n\nDelete stuff to enable Rebuilding of listSerialPortsC\n"
-    if [ `ls liblistSerials*.zip` ]; then
+    if [[ `ls liblistSerials*.zip` ]]; then
         rm -v ./liblistSerials*.zip
     fi
-    if [ `ls liblistSerials*.sha` ]; then
+    if [[ `ls liblistSerials*.sha` ]]; then
         rm -v ./liblistSerials*.sha
     fi
 fi
 
 if [[ ! `ls liblistSerials*.zip` ]]; then
     echo -e "\n\nBuilding listSerialPortsC\n"
-    #VERSION="1.0.4"
-    VERSION=`git tag`
     cd listSerialPortsC
-    if [ `uname -s` == "Linux" ]; then
+    VERSION="1.0.5"
+    #VERSION=`git tag`
+    if [[ `uname -s` == "Linux" ]]; then
         mkdir -p distrib/$Sys
         cd libserialport
         if [[ -f make ]]; then
@@ -506,7 +506,7 @@ if [[ ! `ls liblistSerials*.zip` ]]; then
         make clean
         make -j $JOBS
         cd ..
-        if [ $Sys == "arm" ]; then
+        if [[ $Sys == "arm" ]]; then
             gcc -s main.c libserialport/linux_termios.c libserialport/linux.c libserialport/serialport.c -Ilibserialport/  -o listSerialC
             gcc -s jnilib.c libserialport/linux_termios.c libserialport/linux.c libserialport/serialport.c -Ilibserialport/ -I$JAVA_HOME/include -I$JAVA_HOME/include/linux -shared -fPIC -o liblistSerialsj.so
         else
