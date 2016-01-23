@@ -15,6 +15,7 @@ echo -e "\n\nConfiguration values\n\n"
 
 #Update_git="yes"
 #Update_Arduino_git="yes"
+#Build_distro="yes"
 
 #ReBuild_Arduino="yes"
 #ReBuild_toolchain_avr="yes"
@@ -86,6 +87,7 @@ elif [ `uname -s` == "Linux" ]; then
         exit -1
     fi
 fi
+
 
 # Checking for go
 echo -e "\n\nChecking for go\n"
@@ -208,6 +210,7 @@ if [[ $Update_git == "yes" ]]; then
     cd ..
 fi
 
+
 if [[ $ReBuild_toolchain_avr == "yes" ]]; then
     echo -e "\n\nDelete stuff to enable Rebuilding of toolchain-avr\n\n"
     if [[ `ls linux/avr-gcc*bz2*` ]]; then
@@ -310,7 +313,6 @@ if [[ $Update_git == "yes" ]]; then
     cd ..
 fi
 
-
 if [[ ! -f libastylej-2.05.1.zip ]]; then
     echo -e "\n\nBuilding astyle\n"
     if [ `uname -s` == "Linux" ]; then
@@ -345,9 +347,7 @@ if [[ ! -f libastylej-2.05.1.zip ]]; then
     mv libastylej-2.05.1.zip* $Working_Directory
     cd $Working_Directory
 fi
-
 # End Asyle
-
 
 # ctags
 if [[ ! -d ctags ]]; then
@@ -361,6 +361,7 @@ if [[ $ReBuild_ctags == "yes" ]]; then
         rm -v ctags/ctags
     fi
 fi
+
 
 if [[ $Update_git == "yes" ]]; then
     echo -e "\n\nUpdate ctags git\n"
@@ -387,8 +388,7 @@ if [[ ! -f ctags/ctags ]]; then
     make -j $JOBS
     cd ..
 fi
-
-# end ctags
+# End ctags
 
 
 # Bossac
@@ -443,9 +443,7 @@ if [[ $Coan == "yes" ]]; then
         cd ..
     fi
 fi
-
 # End Coan
-
 
 # liblistserials
 if [[ ! -d listSerialPortsC ]]; then
@@ -525,7 +523,6 @@ if [[ ! `ls liblistSerials*.zip` ]]; then
     mv liblistSerials-$VERSION.zip* $Working_Directory
     cd $Working_Directory
 fi
-
 # End liblistserials
 
 # OpenOCD
@@ -560,9 +557,7 @@ if [[ $OpenOCD == "yes" ]]; then
         cd ..
     fi
 fi
-
 # OpenOCD
-
 
 # arduino-builder
 if [[ ! -d arduino-builder ]]; then
@@ -595,6 +590,7 @@ if [[ $Update_git == "yes" ]]; then
     cd ..
 fi
 
+
 if [[ $ReBuild_arduino_builder == "yes" ]]; then
     echo -e "\n\nDelete stuff to enable Rebuilding of Arduino_builder\n"
     if [[ -f arduino-builder/arduino-builder ]]; then
@@ -602,7 +598,7 @@ if [[ $ReBuild_arduino_builder == "yes" ]]; then
     fi
 fi
 
-# [mkdir] Created dir: /usr/local/src/test_builder/Arduino/build/linux/arduino-builder-linux32
+
 if [[ ! -f arduino-builder/arduino-builder ]]; then
     echo -e "\n\nBuilding Arduino_builder\n"
     cd arduino-builder
@@ -628,13 +624,14 @@ if [[ ! -f arduino-builder/arduino-builder ]]; then
     cp -v arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2* $Working_Directory
     cd $Working_Directory
 fi
-
 # End arduino-builder
+
 
 echo -e "\n\nSome Checksums\n"
 avr_gcc_sha=`cat linux/avr-gcc-*-$SysTag-*gnu.tar.bz2.sha`
 avrdude_sha=`cat linux/avrdude-*-$SysTag-*gnu.tar.bz2.sha`
 arduino_builder_sha=`cat  arduino-builder-*tar.bz2.sha`
+
 
 # Arduino_IDE
 if [[ $ReBuild_Arduino == "yes" ]]; then
@@ -648,6 +645,23 @@ if [[ ! -f linux/work/arduino ]]; then
     mkdir -p linux/work/tools-builder/ctags/5.8-arduino5
     cp ctags/ctags linux/work/tools-builder/ctags/5.8-arduino5/
 fi
+# End Arduino_IDE
+
+# Build_distro
+if [[ $Build_distro == "yes" ]]; then
+    echo -e "\n\nBuilding Build_distro for $Sys\n"
+    rev=$((head -n 1 linux/work/revisions.txt) | awk '{print$2}')
+    echo $rev
+
+    rm $Start_Directory/Arduino-*.bz2
+    rm -rf $Start_Directory/Arduino-$rev-$Sys
+    mkdir $Start_Directory/Arduino-$rev-$Sys
+    cp -PR linux/work/* $Start_Directory/Arduino-$rev-$Sys
+    cd $Start_Directory
+    tar -cjf Arduino-$rev-$Sys.tar.bz2 Arduino-$rev-$Sys/
+fi
+# End Build_distro
+
 
 echo $start_time
 date
