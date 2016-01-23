@@ -492,8 +492,13 @@ fi
 
 if [[ ! `ls liblistSerials*.zip` ]]; then
     echo -e "\n\nBuilding listSerialPortsC\n"
+    VERSION=`grep -ir 'value="./liblistSerials' build.xml | cut -d '/' -f2 | head -1`
+    VERSION=`echo $VERSION | cut -d '-' -f2`
+    VERSION=`echo $VERSION | cut -d '"' -f1`
+    VERSION=`sed 's/.zip//g' <<<"$VERSION"`
+    echo -e "\nVERSION=$VERSION"
     cd listSerialPortsC
-    VERSION="1.0.5"
+    #VERSION="1.0.5"
     #VERSION=`git tag`
     if [[ `uname -s` == "Linux" ]]; then
         mkdir -p distrib/$Sys
@@ -623,7 +628,8 @@ if [[ ! -f arduino-builder/arduino-builder ]]; then
     wget https://raw.githubusercontent.com/arduino/arduino-builder/master/src/arduino.cc/builder/hardware/platform.txt --directory-prefix=arduino-builder-$Sys/hardware
 
 #    Arduino_Builder_version=`arduino-builder-$Sys/./arduino-builder -version | grep Builder | cut -d " " -f3`
-    Arduino_Builder_version="1.3.9"
+#    Arduino_Builder_version="1.3.9"
+    Arduino_Builder_version=`grep -ir 'ARDUINO-BUILDER-VERSION" value="' ../build.xml | cut -d '"' -f4`
     tar -cjSf ./arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2 -C ./arduino-builder-$Sys/ ./
     shasum arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2 | awk '{ print $1 }' > arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2.sha
     cp -v arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2* $Working_Directory
