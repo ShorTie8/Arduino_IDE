@@ -622,7 +622,8 @@ if [[ ! -f arduino-builder/arduino-builder ]]; then
     wget https://raw.githubusercontent.com/arduino/arduino-builder/master/src/arduino.cc/builder/hardware/platform.keys.rewrite.txt --directory-prefix=arduino-builder-$Sys/hardware
     wget https://raw.githubusercontent.com/arduino/arduino-builder/master/src/arduino.cc/builder/hardware/platform.txt --directory-prefix=arduino-builder-$Sys/hardware
 
-    Arduino_Builder_version=`arduino-builder-$Sys/./arduino-builder -version | grep Builder | cut -d " " -f3`
+#    Arduino_Builder_version=`arduino-builder-$Sys/./arduino-builder -version | grep Builder | cut -d " " -f3`
+    Arduino_Builder_version="1.3.9"
     tar -cjSf ./arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2 -C ./arduino-builder-$Sys/ ./
     shasum arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2 | awk '{ print $1 }' > arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2.sha
     cp -v arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2* $Working_Directory
