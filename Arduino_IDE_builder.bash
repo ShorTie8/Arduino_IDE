@@ -13,6 +13,7 @@
 # The rest are mainly for if your playing with the sources, and my debug, lol.
 echo -e "\n\nConfiguration values\n\n"
 
+#Update_me="yes"
 #Update_git="yes"
 #Update_Arduino_git="yes"
 #Build_distro="yes"
@@ -36,7 +37,6 @@ Silence_is_Golden="yes"
 #Toolchain_avr_version="3.5.0"
 
 
-
 # Script,
 # *****************************************************************
 echo -e "\n\nSystem check\n\n"
@@ -55,11 +55,12 @@ else
     echo "Yuppers .. :)~"
 fi
 
-if [[ $Update_git == "yes" ]]; then
+if [[ $Update_me == "yes" ]]; then
     echo -e "\n\nChecking to see if I'm update\n"
     git remote update
     # http://stackoverflow.com/questions/3258243/check-if-pull-needed-in-git
     if [[ ! `git status -uno | grep up-to-date` ]]; then
+        git checkout -- .
         git pull
         echo -e "\n\nUpdating me\nRestart required\n\n"
         exit 1
