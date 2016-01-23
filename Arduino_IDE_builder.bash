@@ -13,7 +13,7 @@
 # The rest are mainly for if your playing with the sources, and my debug, lol.
 echo -e "\n\nConfiguration values\n\n"
 
-#Update_me="yes"
+Update_me="yes"
 #Update_git="yes"
 #Update_Arduino_git="yes"
 #Build_distro="yes"
