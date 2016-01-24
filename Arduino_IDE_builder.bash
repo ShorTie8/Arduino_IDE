@@ -157,16 +157,21 @@ if [[ ! -d Arduino ]]; then
     if [[ $Sys != "arm" ]]; then
         git clone --depth 1 https://github.com/arduino/Arduino.git
     else
-        git clone --depth 1 -b ARM https://github.com/NicoHood/Arduino.git
+        #git clone --depth 1 -b ARM https://github.com/NicoHood/Arduino.git
+        # Receiving objects: 100% (72757/72757), 1.22 GiB | 409.00 KiB/s, done.
+        git clone -b ARM https://github.com/NicoHood/Arduino.git
     fi
     rm -rfv Arduino/build/arduino-builde*
     rm -v Arduino/build/linux/avr-gcc*
     rm -v Arduino/build/linux/avrdude*
     rm -v Arduino/build/libastyle*
     rm -v Arduino/build/liblistSerials*
-    
-    
+    cd Arduino
+    git checkout 4feb0af
+    cd ..
 fi
+
+#exit 0
 
 if [[ $Update_Arduino_git == "yes" ]]; then
     echo -e "\n\nChecking for Arduino_IDE github updates\n\n"
