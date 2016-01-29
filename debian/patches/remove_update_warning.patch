@@ -1,32 +1,28 @@
-Description: Remove the notification if a new upstream version is available
-Author: Scott Howard <showard314@gmail.com>
-Bug: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=603818
-
-Index: Arduino-1.6.5/app/src/processing/app/UpdateCheck.java
-===================================================================
---- Arduino-1.6.5.orig/app/src/processing/app/UpdateCheck.java
-+++ Arduino-1.6.5/app/src/processing/app/UpdateCheck.java
-@@ -100,26 +100,6 @@ public class UpdateCheck implements Runn
+diff --git a/app/src/processing/app/UpdateCheck.java b/app/src/processing/app/UpdateCheck.java
+index 39c5550..96c59af 100644
+--- a/app/src/processing/app/UpdateCheck.java
++++ b/app/src/processing/app/UpdateCheck.java
+@@ -100,26 +100,6 @@ public class UpdateCheck implements Runnable {
        }
        PreferencesData.set("update.last", String.valueOf(now));
  
 -      String prompt =
--        _("A new version of Arduino is available,\n" +
+-        tr("A new version of Arduino is available,\n" +
 -          "would you like to visit the Arduino download page?");
 -        
 -      if (base.activeEditor != null) {
 -        if (latest > BaseNoGui.REVISION) {
--          Object[] options = { _("Yes"), _("No") };
+-          Object[] options = { tr("Yes"), tr("No") };
 -          int result = JOptionPane.showOptionDialog(base.activeEditor,
 -                                                    prompt,
--                                                    _("Update"),
+-                                                    tr("Update"),
 -                                                    JOptionPane.YES_NO_OPTION,
 -                                                    JOptionPane.QUESTION_MESSAGE,
 -                                                    null,
 -                                                    options,
 -                                                    options[0]);
 -          if (result == JOptionPane.YES_OPTION) {
--            Base.openURL(_("http://www.arduino.cc/en/Main/Software"));
+-            Base.openURL(tr("http://www.arduino.cc/en/Main/Software"));
 -          }
 -        }
 -      }
