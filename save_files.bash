@@ -22,6 +22,8 @@ if [[ ! -d files/toolchain-avr_files ]]; then
 fi
 
 cp -v Arduino/build/*.zip files/build_files
+cp -v Arduino/build/libastyle*.sha files/build_files
+cp -v Arduino/build/liblistSerials*.sha files/build_files
 
 cp -v Arduino/build/linux/avr-gcc*tar* files/build-linux_files
 cp -v Arduino/build/linux/avrdude*tar* files/build-linux_files

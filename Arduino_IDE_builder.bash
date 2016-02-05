@@ -13,6 +13,8 @@
 # The rest are mainly for if your playing with the sources, and my debug, lol.
 echo -e "\n\nConfiguration values\n\n"
 
+Stable="1.6.7"
+
 Update_me="yes"
 #Update_git="yes"
 #Update_Arduino_git="yes"
@@ -36,17 +38,17 @@ Silence_is_Golden="yes"
 #Toolchain_avr_version="3.4.5"
 #Toolchain_avr_version="3.5.0"
 
-
+# https://github.com/arduino/ArduinoCore-samd
 # Script,
 # *****************************************************************
 echo -e "\n\nSystem check\n\n"
 
-# Check to see if Arduino_IDE_builder.bash is being run as root
 start_time=$(date)
 Start_Directory=`pwd`
 Working_Directory=`pwd`/Arduino/build
 
 
+# Check to see if Arduino_IDE_builder.bash is being run as root
 echo -e "\n\nChecking for root .. \n"
 if [ `id -u` != 0 ]; then
     echo -e "\n\nOoops, So, So, Sorry, We play only as root !!\nTry sudo\nHave A Great Day\n\n"
@@ -58,7 +60,6 @@ fi
 if [[ $Update_me == "yes" ]]; then
     echo -e "\n\nChecking to see if I'm update\n"
     git remote update
-    # http://stackoverflow.com/questions/3258243/check-if-pull-needed-in-git
     if [[ ! `git status -uno | grep up-to-date` ]]; then
         git checkout -- .
         git pull
@@ -70,10 +71,6 @@ fi
 echo -e "\n\nJava Checking and setup\n"
 Java_Version=`java -version 2>&1 | sed 's/java version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q'`
 echo $JAVA_HOME
-
-# Sortta think this needs set in the IDE too...
-# Do not assume env.JAVA_HOME is set right
-# <property name="java_home" value="${env.JAVA_HOME}" />
 
 # Check for what version of Java and set JAVA_HOME
 if [[ $Java_Version != "18" ]]; then
@@ -154,21 +151,36 @@ echo -e "\n\nBuilding Arduino_IDE for $Sys\n\n"
 
 if [[ ! -d Arduino ]]; then
     echo -e "\n\nRetriving Arduino_IDE for $Sys form github and remove some junk\n\n"
-    if [[ $Sys != "arm" ]]; then
-        git clone --depth 1 https://github.com/arduino/Arduino.git
+    if [[ $Stable ]]; then
+        git clone --depth 1 -b $Stable https://github.com/arduino/Arduino.git
     else
-        #git clone --depth 1 -b ARM https://github.com/NicoHood/Arduino.git
-        # Receiving objects: 100% (72757/72757), 1.22 GiB | 409.00 KiB/s, done.
-        git clone -b ARM https://github.com/NicoHood/Arduino.git
+        git clone --depth 1 https://github.com/arduino/Arduino.git
+    fi
+    if [[ $Sys == "arm" ]]; then
+        cd Arduino
+        if [[ $Stable == "1.6.7" ]]; then
+            patch -p1 < ../debian/patches/build.xml.167.arm_fix.patch
+        else
+            patch -p1 < ../debian/patches/build.xml.arm_fix.patch
+        fi
+
+        patch -p1 < ../debian/patches/remove_update_warning.patch
+        if [[ ! $Stable ]]; then
+            patch -p1 < ../debian/patches/Boards_Manager_Revert.patch
+        fi
+        cd ..
     fi
     rm -rfv Arduino/build/arduino-builde*
     rm -v Arduino/build/linux/avr-gcc*
     rm -v Arduino/build/linux/avrdude*
+    if [[ -d files ]]; then
+        ./put_files.bash
+    fi
     rm -v Arduino/build/libastyle*
-    rm -v Arduino/build/liblistSerials*
-    cd Arduino
-    git checkout 4feb0af
-    cd ..
+    if [[ `ls Arduino/build/liblistSerials-*` ]]; then
+        rm -v Arduino/build/liblistSerials-*
+    fi
+    cd $Working_Directory
 fi
 
 #exit 0
@@ -176,18 +188,62 @@ fi
 if [[ $Update_Arduino_git == "yes" ]]; then
     echo -e "\n\nChecking for Arduino_IDE github updates\n\n"
     cd Arduino
-    # Receiving objects: 100% (67507/67507), 1.16 GiB | 330.00 KiB/s, done.
-    git remote update
-    if [[ ! `git status -uno | grep up-to-date` ]]; then
+    if [[ ! `git branch | grep master` ]]; then
         git checkout -- .
-        git pull
+        git remote add upstream https://github.com/arduino/Arduino.git
+        git checkout -b master
+        git fetch upstream
+        git merge upstream/master
+        if [[ $Sys == "arm" ]]; then
+            if [[ ! `patch -p1 < ../debian/patches/build.xml.arm_fix.patch --dry-run | grep Reversed ` ]]; then
+                patch -p1 < ../debian/patches/build.xml.arm_fix.patch
+            fi
+            if [[ ! `patch -p1 < ../debian/patches/remove_update_warning.patch --dry-run | grep Reversed ` ]]; then
+                patch -p1 < ../debian/patches/remove_update_warning.patch
+            fi
+            if [[ ! `patch -p1 < ../debian/patches/Boards_Manager_Revert.patch --dry-run | grep Reversed ` ]]; then
+                patch -p1 < ../debian/patches/Boards_Manager_Revert.patch
+            fi
+        fi
+        ReBuild_Arduino="yes"
+        ReBuild_arduino_builder="yes"
+        ReBuild_astyle="yes"
+        ReBuild_ctags="yes"
+        ReBuild_listSerialPortsC="yes"
+        if [[ -d files ]]; then
+            ./put_files.bash
+        fi
         cd build
-        ant clean
     else
-        cd build
+        git remote update
+        if [[ ! `git status -uno | grep up-to-date` ]]; then
+            git checkout -- .
+            git pull
+            if [[ $Sys == "arm" ]]; then
+                if [[ ! `patch -p1 < ../debian/patches/build.xml.arm_fix.patch --dry-run | grep Reversed ` ]]; then
+                    patch -p1 < ../debian/patches/build.xml.arm_fix.patch
+                fi
+                if [[ ! `patch -p1 < ../debian/patches/remove_update_warning.patch --dry-run | grep Reversed ` ]]; then
+                    patch -p1 < ../debian/patches/remove_update_warning.patch
+                fi
+                if [[ ! `patch -p1 < ../debian/patches/Boards_Manager_Revert.patch --dry-run | grep Reversed ` ]]; then
+                    patch -p1 < ../debian/patches/Boards_Manager_Revert.patch
+                fi
+            fi
+            ReBuild_Arduino="yes"
+            ReBuild_arduino_builder="yes"
+            ReBuild_astyle="yes"
+            ReBuild_ctags="yes"
+            ReBuild_listSerialPortsC="yes"
+            if [[ -d files ]]; then
+                ./put_files.bash
+            fi
+            cd build
+        else
+            cd build
+        fi
     fi
 else
-    #cd Arduino/build
     cd $Working_Directory
 fi
 
@@ -268,6 +324,7 @@ fi
 if [ ! `ls linux/avrdude*arduino*bz2` ]; then
     echo -e "\n\nBuilding avrdude\n\n"
     cd toolchain-avr
+    git tag
     if [ `uname -s` == "Linux" ]; then
         if [ $Sys == "arm" ]; then
             ./clean.bash
@@ -323,10 +380,11 @@ if [[ $Update_git == "yes" ]]; then
     cd ..
 fi
 
-if [[ ! -f libastylej-2.05.1.zip ]]; then
+if [[ ! `ls libastylej-*.zip` ]]; then
     echo -e "\n\nBuilding astyle\n"
     if [ `uname -s` == "Linux" ]; then
         cd astyle
+        git tag
         ./setup.bash
         cd astyle-code/AStyle/build/gcc/
 
@@ -362,7 +420,7 @@ fi
 # ctags
 if [[ ! -d ctags ]]; then
     echo -e "\n\nChecking for ctags\n"
-    git clone --depth 1 https://github.com/arduino/ctags.git
+    git clone https://github.com/arduino/ctags.git
 fi
 
 if [[ $ReBuild_ctags == "yes" ]]; then
@@ -376,6 +434,7 @@ fi
 if [[ $Update_git == "yes" ]]; then
     echo -e "\n\nUpdate ctags git\n"
     cd ctags
+    git tag
     git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
         git pull
@@ -402,7 +461,14 @@ fi
 
 
 # Bossac
+if [[ ! $Bossac && ! `grep -ir 'exclude name="arduino/sam' build.xml` ]]; then
+    patch -p1 -R < ../../debian/patches/sam_fix.patch
+fi
+
 if [[ $Bossac == "yes" ]]; then
+    if [[ `grep -ir 'exclude name="arduino/sam' build.xml` ]]; then
+        patch -p1 < ../../debian/patches/sam_fix.patch
+    fi
 
     if [[ ! `ls linux/bossac*arduino*` ]]; then
         echo -e "\n\nBuilding bossac\n"
@@ -425,6 +491,7 @@ if [[ $Bossac == "yes" ]]; then
 
         shasum arduino/bossac-1.6.1-arduino-arm-linux-gnueabihf.tar.gz | awk '{ print $1 }' > arduino/bossac-1.6.1-arduino-arm-linux-gnueabihf.tar.gz.sha
         mv arduino/bossac*arduino* ../linux
+        ReBuild_Arduino="yes"
         cd ..
     fi
 fi
@@ -488,26 +555,23 @@ fi
 if [[ $ReBuild_listSerialPortsC == "yes" ]]; then
     echo -e "\n\nDelete stuff to enable Rebuilding of listSerialPortsC\n"
     if [[ `ls liblistSerials*.zip` ]]; then
-        rm -v ./liblistSerials*.zip
-    fi
-    if [[ `ls liblistSerials*.sha` ]]; then
-        rm -v ./liblistSerials*.sha
+        rm -v ./liblistSerials*
     fi
 fi
 
 if [[ ! `ls liblistSerials*.zip` ]]; then
-    echo -e "\n\nBuilding listSerialPortsC\n"
-    VERSION=`grep -ir 'value="./liblistSerials' build.xml | cut -d '/' -f2 | head -1`
+    cd listSerialPortsC
+    VERSION=`grep -ir 'value="./liblistSerials' ../build.xml | cut -d '/' -f2 | head -1`
     VERSION=`echo $VERSION | cut -d '-' -f2`
     VERSION=`echo $VERSION | cut -d '"' -f1`
     VERSION=`sed 's/.zip//g' <<<"$VERSION"`
-    echo -e "\nVERSION=$VERSION"
-    cd listSerialPortsC
-    #VERSION="1.0.5"
-    #VERSION=`git tag`
+    git_VERSION=`git tag`
+
+    echo -e "\n\nBuilding listSerialPortsC version $git_VERSION\ntar'ing as $VERSION for the build.xml\n\n"
     if [[ `uname -s` == "Linux" ]]; then
         mkdir -p distrib/$Sys
         cd libserialport
+        #git tag
         if [[ -f make ]]; then
             make distclean
         fi
@@ -577,7 +641,11 @@ fi
 # arduino-builder
 if [[ ! -d arduino-builder ]]; then
     echo -e "\n\nGetting Arduino_builder\n"
-    git clone --depth 1 https://github.com/arduino/arduino-builder
+    if [[ $Sys == "arm" ]]; then
+        git clone -b arm https://github.com/arduino/arduino-builder
+    else
+        git clone https://github.com/arduino/arduino-builder
+    fi
     cd arduino-builder
     export PATH=$PATH:/usr/local/go/bin/
     export GOPATH=`pwd`
@@ -596,27 +664,26 @@ if [[ $Update_git == "yes" ]]; then
     git remote update
     if [[ ! `git status -uno | grep up-to-date` ]]; then
         git pull
-        #rm arduino-builder
-        export PATH=$PATH:/usr/local/go/bin/
-        export GOPATH=`pwd`
-        export GOROOT=/usr/local/go
-        go clean
+        rm -v ../arduino-builder-*
     fi
     cd ..
+    rm -v arduino-builder-*
 fi
 
 
 if [[ $ReBuild_arduino_builder == "yes" ]]; then
     echo -e "\n\nDelete stuff to enable Rebuilding of Arduino_builder\n"
-    if [[ -f arduino-builder/arduino-builder ]]; then
-        rm -v arduino-builder/arduino-builder
+    if [[ `ls arduino-builder-*bz2` ]]; then
+        rm -v arduino-builder-*
     fi
 fi
 
 
-if [[ ! -f arduino-builder/arduino-builder ]]; then
-    echo -e "\n\nBuilding Arduino_builder\n"
+if [[ ! `ls arduino-builder-*bz2` ]]; then
     cd arduino-builder
+    git_ver=`grep -ir 'const VERSION' main.go | cut -d " " -f4`
+    Arduino_Builder_version=`grep -ir 'ARDUINO-BUILDER-VERSION" value="' ../build.xml | cut -d '"' -f4`
+    echo -e "\n\nBuilding Arduino_builder github version $git_ver\ntar'ing as $Arduino_Builder_version for build.xml\n"
     if [[ -d arduino-builder-$Sys ]]; then
         rm -rvf arduino-builder-$Sys
     fi
@@ -632,9 +699,10 @@ if [[ ! -f arduino-builder/arduino-builder ]]; then
     wget https://raw.githubusercontent.com/arduino/arduino-builder/master/src/arduino.cc/builder/hardware/platform.keys.rewrite.txt --directory-prefix=arduino-builder-$Sys/hardware
     wget https://raw.githubusercontent.com/arduino/arduino-builder/master/src/arduino.cc/builder/hardware/platform.txt --directory-prefix=arduino-builder-$Sys/hardware
 
-#    Arduino_Builder_version=`arduino-builder-$Sys/./arduino-builder -version | grep Builder | cut -d " " -f3`
-#    Arduino_Builder_version="1.3.9"
-    Arduino_Builder_version=`grep -ir 'ARDUINO-BUILDER-VERSION" value="' ../build.xml | cut -d '"' -f4`
+    if [[ $Sys == "arm" ]]; then
+        wget http://downloads.arduino.cc/packages/test_package_arm_index.json --directory-prefix=arduino-builder-$Sys/hardware
+    fi
+    
     tar -cjSf ./arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2 -C ./arduino-builder-$Sys/ ./
     shasum arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2 | awk '{ print $1 }' > arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2.sha
     cp -v arduino-builder-$Sys-$Arduino_Builder_version.tar.bz2* $Working_Directory
@@ -643,38 +711,34 @@ fi
 # End arduino-builder
 
 
-echo -e "\n\nSome Checksums\n"
-avr_gcc_sha=`cat linux/avr-gcc-*-$SysTag-*gnu.tar.bz2.sha`
-avrdude_sha=`cat linux/avrdude-*-$SysTag-*gnu.tar.bz2.sha`
-arduino_builder_sha=`cat  arduino-builder-*tar.bz2.sha`
-
-
 # Arduino_IDE
+build_rev=$((head -n 1 shared/revisions.txt) | awk '{print$2}')
 if [[ $ReBuild_Arduino == "yes" ]]; then
     echo -e "\n\nDelete stuff to enable Rebuilding of the IDE\n"
     ant clean
 fi
 
 if [[ ! -f linux/work/arduino ]]; then
-    echo -e "\n\nBuilding Arduino IDE for $Sys\n"
+    git_ver=`git tag | tail -2`
+    git_ver=`echo $git_ver | cut -d " " -f1`
+    echo -e "\n\nBuilding Arduino IDE $build_rev for $Sys\ngit version $git_ver\n"
+
     ant clean build
     mkdir -p linux/work/tools-builder/ctags/5.8-arduino5
     cp ctags/ctags linux/work/tools-builder/ctags/5.8-arduino5/
+    if [[ $Bossac == "yes" ]]; then
+        patch -p1 < ../../debian/patches/sam_path_fix.patch
+    fi
 fi
 # End Arduino_IDE
 
 # Build_distro
 if [[ $Build_distro == "yes" ]]; then
-    echo -e "\n\nBuilding Build_distro for $Sys\n"
-    rev=$((head -n 1 linux/work/revisions.txt) | awk '{print$2}')
-    echo $rev
-
-    rm $Start_Directory/Arduino-*.bz2
-    rm -rf $Start_Directory/Arduino-$rev-$Sys
-    mkdir $Start_Directory/Arduino-$rev-$Sys
-    cp -PR linux/work/* $Start_Directory/Arduino-$rev-$Sys
-    cd $Start_Directory
-    tar -cjf Arduino-$rev-$Sys.tar.bz2 Arduino-$rev-$Sys/
+    if [[ -f ../../arduino-*.xz ]]; then
+        rm -v ../../arduino-*.xz
+    fi
+    echo "$build_rev" | ant dist
+    mv -v linux/arduino-*.xz ../../
 fi
 # End Build_distro
 
