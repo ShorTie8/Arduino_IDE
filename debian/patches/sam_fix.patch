@@ -1,18 +1,12 @@
-Index: Arduino-1.6.5/build/build.xml
-===================================================================
---- Arduino-1.6.5.orig/build/build.xml
-+++ Arduino-1.6.5/build/build.xml
-@@ -1,4 +1,4 @@
--<?xml version="1.0"?>
-+﻿<?xml version="1.0"?>
- <project name="Arduino" default="build">
-   <!--echo message="os.name = ${os.name}" /-->
-   <!--echo message="os.arch = ${os.arch}" /-->
-@@ -201,7 +201,6 @@
+diff --git a/build.xml b/build.xml
+--- a/build.xml
++++ b/build.xml
+@@ -226,7 +226,7 @@
    <target name="assemble-hardware" unless="light_bundle">
      <copy todir="${target.path}/hardware">
        <fileset dir="../hardware">
 -        <exclude name="arduino/sam/**"/>
++
        </fileset>
      </copy>
    </target>
