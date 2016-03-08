@@ -1,6 +1,6 @@
 # Arduino_IDE_builder.bash
 
-This repository contains a script for building the Arduino IDE and toolchain from source on Linux.  Although it was written for ARM platforms primarily, such as the Raspberry Pi or ODroid, I do believe it will work on any Linux box (and possibly with a little help Mac and Windows too). The script has been tested on Raspberry Pi2, Odroid C1 and Debian 8.20 i386, and all seems well.
+This repository contains a script for building the Arduino IDE and toolchain from source on Linux.  Although it was written for ARM platforms primarily, such as the Raspberry Pi or ODroid, I do believe it will work on any Linux box (and possibly with a little help Mac and Windows too). The script has been tested on Raspberry Pi 2, Odroid C1 and Debian 8.20 i386, and all seems well.
 
 It works by retrieving the souces for the various projects from GitHub and building everything locally.
 
@@ -34,7 +34,7 @@ It works by retrieving the souces for the various projects from GitHub and build
    
 1. Either run directly with:
    ```
-   sudo ./Arduino_IDE_builder.bash
+   sudo Arduino/build/linux/work/./arduino
    ```
 
 1. Or install as a local user with (installing as root doesn't work):
@@ -44,7 +44,7 @@ It works by retrieving the souces for the various projects from GitHub and build
 
 ## Notes
 
-* Not all options are fully implemented yet, but `Silence_is_Golden` is enabled as it `sed`'s through `toolchain-avr` on the initial git clone to silence it and make things easier to follow; to do/un-do it, just `rm -rf Arduino/build/toolchain-avr` and re-run the script.
+* Not all options are fully implemented yet, but `Silence_is_Golden` is enabled as it `sed`'s through `toolchain-avr` on the initial git clone to silence it and make things easier to follow; to do/undo it, just `rm -rf Arduino/build/toolchain-avr` and re-run the script.
 
 * You can save some download time by coping all the files for `toolchain-avr` downloads over as git clone is working if you have them.
 
