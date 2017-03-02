@@ -298,7 +298,7 @@ if [ ! `ls linux/avr-gcc*bz2` ]; then
     cd toolchain-avr
     if [ `uname -s` == "Linux" ]; then
         if [ $Sys == "arm" ]; then
-            MAKE_JOBS="$JOBS" ./arch.arm.build.bash
+            MAKE_JOBS="$JOBS" ./package-avr-gcc.bash
             shasum avr-gcc-4.8.1-arduino5-armhf-pc-linux-gnu.tar.bz2 | awk '{ print $1 }' > avr-gcc-4.8.1-arduino5-armhf-pc-linux-gnu.tar.bz2.sha
             shasum avrdude-6.0.1-arduino5-armhf-pc-linux-gnu.tar.bz2 | awk '{ print $1 }' > avrdude-6.0.1-arduino5-armhf-pc-linux-gnu.tar.bz2.sha
         elif [ $Sys == "linux32" ]; then
